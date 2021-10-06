@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Migration Layer</title>
+    <link rel="stylesheet" href="leaflet.css" />
+    <script src="leaflet.js"></script>
+    <script src='src.js'></script>
+    <script src="leaflet.migrationLayer.js"></script>
+    <script src="data/resguardos_alto_san_juan.geojson"></script>
+    <script src="data/puerto_boyaca.geojson"></script>
+    <script src="data/predial.geojson"></script>
+    <script src="data/rios_san_juan.geojson"></script>
+    <script src="data/produccion_petroleo.geojson"></script>
+    <script src="data/vias_1.geojson"></script>
+    <script src="data/vias_2.geojson"></script>
+    <script src="data/quinchas_1.geojson"></script>
+    <script src="data/quinchas_2.geojson"></script>
+    <script src="data/sendero_a.geojson"></script>
+    <script src="data/sendero_b.geojson"></script>
+    <style>
+    html,body{
+        margin: 0;
+        padding: 0;
+    }
+    #map{
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+    #event{
+        position: absolute;
+        top: 10px;
+        right: 200px;
+        height: 100px;
+        width: 400px;
+        z-index: 10000;
+    }
+    .btn{
+        border-color:gray;
+        border-width: 2px;
+        background-color:white;
+   }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id='event'>
+        <input type="button" value="Destierro 1980" class="btn" onclick="setData1()">
+        <input type="button" value="Destierro 2000" class="btn" onclick="setData2()">
+        <input type="button" value="Reubicación 2002" class="btn" onclick="setData3()">
+        <input type="button" value="Destierro 2009" class="btn" onclick="setData4()">
+        <input type="button" value="Retorno katío 2012" class="btn" onclick="setData5()">
+        <input type="button" value="ocultar flujos" class="btn" onclick="hide()">
+        <input type="button" value="mostrar flujos" class="btn" onclick="show()">
+        <input type="button" value="pausar" class="btn" onclick="pause()">
+        <input type="button" value="iniciar" class="btn" onclick="play()">
+    </div>
+    <script>
+       
+
+       var lrmap = L.map('map').setView([5.96010, -74.58968], 9);
+        var OSM = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+	maxZoom: 20,
+	attribution: '&copy; Openstreetmap France | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+})
+        .addTo(lrmap);
+
+        var satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+	    attribution: ''
+    }).addTo(lrmap);
+        
+        var data = [{"from":[-76.1395026642065, 5.3216320450382],"to":[-74.593752, 5.958819],"labels":["Amurrupá","Casaloma"],"color":"#ff3a31","value":1},{"from":[-76.23037, 5.33194],"to":[-74.593752, 5.958819],"labels":["Peñas del Olvido","Casaloma"],"color":"#ff7e2b", "value":1},{"from":[-76.170633, 5.370335],"to":[-74.593752, 5.958819],"labels":["Gito Docabú","Casaloma"],"color":"#CD1BF0","value":1}, {"from":[-76.23037, 5.33194],"to":[-74.372880, 6.002507],"labels":["Peñas del Olvdo","Motordochake"],"color":"#0D5BE3","value":1}, {"from":[-76.1395026642065, 5.3216320450382],"to":[-74.372880, 6.002507],"labels":["Amurrupá","Motordochake"],"color":"#ff3a31","value":1}];
+        
+
+        var data_1980 = [{"from":[-76.1395026642065, 5.3216320450382],"to":[-74.425123, 5.757826],"labels":["Amurrupá","Casaloma"],"color":"#ff3a31","value":1}];
+        
+        var data_2000 = [{"from":[-76.23037, 5.33194],"to":[-74.589473, 5.977738],"labels":["Amurrupá","Casaloma"],"color":"#1B2BF0","value":1}, {"from":[-74.425123, 5.757826],"to":[-74.589473, 5.977738],"labels":["Amurrupá","Casaloma"],"color":"#ff3a31","value":1}];
+
+        var data_2002 = [{"from":[-74.589473, 5.977738],"to":[-74.372880, 6.001507],"labels":["Amurrupá","Casaloma"],"color":"#1B2BF0","value":1}, {"from":[-74.589473, 5.977738],"to":[-74.372880, 6.003507],"labels":["Amurrupá","Casaloma"],"color":"#ff3a31","value":1}];
+
+        var data_2009 = [{"from":[-76.170633, 5.370335],"to":[-74.372880, 6.002507],"labels":["Amurrupá","Casaloma"],"color":"#CD1BF0","value":1}];
+
+        var data_2012 = [{"from":[-74.372880, 6.002507],"to":[-76.1395026642065, 5.3216320450382],"labels":["","amurrupa"],"color":"#ff3a31","value":1},{"from":[-74.372880, 6.002507],"to":[-76.23037, 5.33194],"labels":["","Peñas"],"color":"#1B2BF0", "value":1},{"from":[-74.372880, 6.002507],"to":[-76.170633, 5.370335],"labels":["Gito Docabú","Gito Docabú"],"color":"#CD1BF0","value":1}];
+
+
+        data = data.map(item => { return {...item, value: parseInt(Math.random()*1)}});
+      
+
+        var migrationLayer = new L.migrationLayer({
+            map: lrmap,
+            data: data,
+            pulseRadius:50,
+            pulseBorderWidth:6,
+            arcWidth:2,
+            arcLabel:false,
+            arcLabelFont:'10px sans-serif',
+            maxWidth:10
+            }
+        );
+        migrationLayer.addTo(lrmap);
+        function setData1(){
+            migrationLayer.setData(data_1980);
+        }
+        migrationLayer.addTo(lrmap);
+        function setData2(){
+            migrationLayer.setData(data_2000);
+        }
+        function setData3(){
+            migrationLayer.setData(data_2002);
+        }
+        function setData4(){
+            migrationLayer.setData(data_2009);
+        }
+        function setData5(){
+            migrationLayer.setData(data_2012);
+        }
+        function hide(){
+            migrationLayer.hide();
+        }
+        function show(){
+            migrationLayer.show();
+        }
+        function play(){
+            migrationLayer.play();
+        }
+        function pause(){
+            migrationLayer.pause();
+        }
+        function destroy() {
+            migrationLayer.destroy();
+        }
+
+        function petroleoStyle(feature) {
+    return {
+        fillColor: 'black',
+        weight: 2,
+        opacity: 1,
+        color: 'black',
+        dashArray: '1',
+        fillOpacity: 0.1
+    };
+}
+
+
+
+function viasStyle(feature) {
+    return {
+        fillColor: 'red',
+        weight: 2,
+        opacity: 0.8,
+        color: 'red',
+        dashArray: '0',
+        fillOpacity: 0.1
+    };
+}
+    var vias_a =L.geoJson(viasa,{style: viasStyle}).addTo(lrmap); 
+    var vias_b =L.geoJson(viasb,{style: viasStyle}).addTo(lrmap);  
+
+    var petroleo =L.geoJson(petroleo,{style: petroleoStyle}).addTo(lrmap); 
+        function rios_san_juanStyle(feature){
+            return {
+                fillColor : 'green',
+                weight : 1, 
+                opacity : 0.99,
+                color : 'blue', 
+                dashArray : 0, 
+                fillOpacity : 0.5
+            }
+        }
+
+        var rios_san_juan = L.geoJson(
+        rios_san_juan,
+        {style : rios_san_juanStyle}
+        ).addTo(lrmap);
+        
+        function predialStyle(feature) {
+    return {
+        fillColor: 'red',
+        weight: 2,
+        opacity: 1,
+        color: 'black',
+        dashArray: '1',
+        fillOpacity: 1
+    };
+}
+    var predial =L.geoJson(predial,{style: predialStyle}).addTo(lrmap); 
+
+        function puertoStyle(feature) {
+    return {
+        fillColor: 'red',
+        weight: 2,
+        opacity: 1,
+        color: 'black',
+        dashArray: '1',
+        fillOpacity: 0.1
+    };
+}
+    var puerto =L.geoJson(puerto_boyaca,{style: puertoStyle}).addTo(lrmap);
+        
+        
+    function senderoStyle(feature) {
+    return {
+        fillColor: 'red',
+        weight: 2,
+        opacity: 1,
+        color: 'red',
+        dashArray: '4',
+        fillOpacity: 0.1
+    };
+}
+var sendero_a =L.geoJson(sendero_a,{style: senderoStyle}).addTo(lrmap);  
+    var sendero_b =L.geoJson(sendero_b,{style: senderoStyle}).addTo(lrmap);
+
+        function resguardos_alto_san_juanStyle(feature){
+            return {
+                fillColor : 'green',
+                weight : 2, 
+                opacity : 0.99,
+                color : 'black', 
+                dashArray : 1, 
+                fillOpacity : 0.5
+            }
+        }
+
+        function quinchasStyle(feature) {
+    return {
+        fillColor: 'green',
+        weight: 2,
+        opacity: 1,
+        color: 'black',
+        dashArray: '1',
+        fillOpacity: 0.5
+    };
+}
+
+    var quinchas =L.geoJson(quinchasa,{style: quinchasStyle}).addTo(lrmap); 
+    var quinchasb =L.geoJson(quinchasb,{style: quinchasStyle}).addTo(lrmap);
+
+    var resguardos_alto_san_juan = L.geoJson(
+        resguardos_alto_san_juan,
+        {style : resguardos_alto_san_juanStyle}
+        ).addTo(lrmap);
+
+
+        
+
+        var point = [5.958819,-74.593752];
+        var marker =L.marker(point).addTo(lrmap);
+        var myMarker = L.marker(point);
+        myMarker.addTo(lrmap);
+        myMarker.bindPopup(
+            '<b>Casaloma embera katío</b> <div><image style="width: 100%" <img src="fotos/casaloma.jpg" alt="image"/> </div>',
+            {minWidth:300}
+        );
+        var point2 = [6.002507, -74.372880];
+        var marker2 =L.marker(point2).addTo(lrmap);
+        var myMarker2 = L.marker(point2);
+        myMarker2.addTo(lrmap);
+        myMarker2.bindPopup(
+            '<b>Motordochake embera chamí</b> <div><image style="width: 100%" <img src="fotos/motordochake.jpg" alt="image"/> <p>Vídeo realizado por Arturo Nacavera (embera chamí) en el marco del Convenio sobre Patrimonio Cultural Inmaterial desde la perspectiva local (2015)<a href="https://www.youtube.com/watch?v=uH0fchAKCh4"</a> https://www.youtube.com/watch?v=uH0fchAKCh4 </p></div>',
+            {minWidth:300}
+        );
+
+        var point3 = [5.911639,-74.400042];
+        var marker3 =L.marker(point3).addTo(lrmap);
+        var myMarker3 = L.marker(point3);
+        myMarker3.addTo(lrmap);
+        myMarker3.bindPopup(
+            '<b>Hacienda Bombay</b> <div><image style="width: 100%" <img src="fotos/Bombay.jpg" alt="image"/> <p> En marzo del año 2019 la comunidad katío decidió ocupar la hacienda Bombay, para exigir la restauración de sus derechos territoriales, amparados en la sentencia 737 de 2017 de la Corte Constitucional. La ocupación se extendió hasta el mes de agosto, luego de recibir amenazas fueron obligados a volver al asentamiento de Casaloma</p></div>',
+            {minWidth:300}
+        );
+
+        var point4 = [5.93360,-74.25835];
+        var marker4 =L.marker(point4).addTo(lrmap);
+        var myMarker4 = L.marker(point4);
+        myMarker4.addTo(lrmap);
+        myMarker4.bindPopup(
+            '<b>Parque Regional Serranía de Las Quinchas</b>',
+            {minWidth:300}
+        );
+
+        var point5 = [5.33194,-76.23037];
+        var marker5 =L.marker(point5).addTo(lrmap);
+        var myMarker5 = L.marker(point5);
+        myMarker5.addTo(lrmap);
+        myMarker5.bindPopup(
+            '<b>Resguardo Peñas del Olvido (Tadó, Chocó)</b>',
+            {minWidth:300}
+        );
+        var point6 = [5.370335, -76.170633];
+        var marker6 =L.marker(point6).addTo(lrmap);
+        var myMarker6 = L.marker(point6);
+        myMarker6.addTo(lrmap);
+        myMarker6.bindPopup(
+            '<b>Resguardo Gitto Docabú (Pueblo Rico Risaralda)</b>',
+            {minWidth:300}
+        );
+        var point7 = [5.3411389,-76.1464993];
+        var marker7 =L.marker(point7).addTo(lrmap);
+        var myMarker7 = L.marker(point7);
+        myMarker7.addTo(lrmap);
+        myMarker7.bindPopup(
+            '<b>Corregimiento Santa Cecilia (Pueblo Rico, Risaralda)</b>',
+            {minWidth:300}
+        );
+        var point8 = [5.3216320450382,-76.1395026642065];
+        var marker8 =L.marker(point8).addTo(lrmap);
+        var myMarker8 = L.marker(point8);
+        myMarker8.addTo(lrmap);
+        myMarker8.bindPopup(
+            '<b>Quebrada Amurrupá (Pueblo Rico, Risaralda)</b>',
+            {minWidth:300}
+        );
+    
+
+        var baseMaps = {
+    "Imagen satelital": satelite,
+    "Open Street Maps": OSM
+
+    };
+
+    var overlayMaps = {
+    "Puerto Boyacá": puerto,
+    "Resguardos embera Alto San Juan": resguardos_alto_san_juan,
+    "Ríos Alto San Juan": rios_san_juan,
+    "Vías Puerto Boyacá 1": vias_a,
+    "Vías Puerto Boyacá 2": vias_b,
+    
+    "Asentamientos embera": predial,
+
+    "Resguardos embera Alto San Juan": resguardos_alto_san_juan,
+
+    
+    };
+
+    L.control.layers(baseMaps, overlayMaps).addTo(lrmap);
+
+    L.control.scale().addTo(lrmap);
+    </script>
+    
+</body>
+
+</html>

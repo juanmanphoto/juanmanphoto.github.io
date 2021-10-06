@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Portafolio</title>
+  <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/bootstrap-grid.css">
+  <link rel="stylesheet" href="css/estilos.css">
+  <style>
+
+    body { background-color: #646464; 
+    }
+    h2{
+ color: rgb(231, 231, 231);
+    }
+    h6{
+      text-align: justify;
+      color: rgb(224, 224, 224);
+      line-height: unset;
+    }
+    h5{
+      text-align: justify;
+      color:rgb(231, 231, 231)
+    }
+  form{
+    max-width: 450px;
+    margin: 0 auto 50px;
+ 
+  }
+  label{
+    display: block;
+  
+
+  }
+  span{
+    display: block;
+  }
+
+  input, textarea {
+    border: 3px solid #202020;
+    width: 100%;
+    padding: 7px;
+    
+}
+textarea{
+  padding: 0.5em;
+}
+.enviar-wrap{
+  text-align: right;
+  width: 40%;
+  
+}
+
+
+    </style> 
+  <body>
+    <header>
+
+        <nav class="navbar navbar-dark bg-dark navbar-expand-lg navbar-light bg-light">
+          <a class="navbar-brand active" href="index.html">Inicio</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item ">
+                <a class="nav-link" href="perfil.html">Perfil <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Proyectos
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="embera.html">Territorialización Embera en Puerto Boyacá</a>
+                  <a class="dropdown-item" href="pto.html">Capital antisubversiva de Colombia</a>
+                  <a class="dropdown-item" href="guaviare.html">Guaviare selva y colonización</a>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link " href="videos.html">Vídeos</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="contacto.html">Contacto</a>
+              </li>
+
+            </ul>
+
+          </div>
+        </nav>
+       
+
+      </header>
+        </head>
+                         
+        <div class="container">
+ 
+          <section id="contacto">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-12 text-center">
+           
+          <div class="col-12 ">
+            <br>  
+            <h2 class="site-section-heading text-center">Contacto</h2>
+            <h6 class="site-section-heading text-center">Para mayor información escribe un mensaje</h6>
+                  
+     
+    <form action="https://formspree.io/xbjzejwn" method="POST">
+      <div class="info-group">
+      <label><span>Tú nombre</span>
+      <input type="text" name="name"></label>
+      <label><span>Tú e-mail</span>
+      <input type="email" name="_replyto"></label>
+    </div>
+    
+      <label><span>Asunto</span>
+      <textarea name="Mensaje" id="" cols="30" rows="10"></textarea></label>
+      <div class="enviar-wrap">
+      <input type="submit" value="Enviar">
+      </div>
+    </form>  
+              </div>
+                </div>
+                 </div>
+                </div>
+              </div>
+
+
+
+      <script src="js/jquery.js"></script>
+      <script src="js/bootstrap.js"></script>
+      <script src="js/bootstrap.bundle.js"></script>
+      <script type="text/javascript">
+        $(document).ready(function () {
+            $('.dropdown-toggle').dropdown();
+        });
+   </script>
+  </body>
+</html>
+
